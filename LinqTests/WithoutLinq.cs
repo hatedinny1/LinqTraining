@@ -1,6 +1,7 @@
 ﻿using LinqTests;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace LinqSample.WithoutLinq
 {
@@ -138,6 +139,38 @@ namespace LinqSample.WithoutLinq
                 }
             }
             throw new InvalidOperationException("The source sequence is empty.");
+        }
+
+        public static IEnumerable<int> YourGroup<T>(this IEnumerable<T> sources, int i, Func<T, int> func)
+        {
+            var groupSum = 0;
+            var groupCount = 0;
+            var enumerator = sources.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                groupSum += func(enumerator.Current);
+                groupCount++;
+                if (groupCount % i == 0)
+                {
+                    yield return groupSum;
+                    groupSum = 0;
+                }
+            }
+            yield return groupSum;
+        }
+
+        public static T YourLast<T>(this IEnumerable<T> sources, Func<T, bool> func)
+        {
+            var reversedSource = sources.Reverse();
+            var enumerator = reversedSource.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                if (func(enumerator.Current))
+                {
+                    return enumerator.Current;
+                }
+            }
+            throw new ArgumentNullException();
         }
     }
 }
