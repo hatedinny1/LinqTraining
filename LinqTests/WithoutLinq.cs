@@ -126,5 +126,18 @@ namespace LinqSample.WithoutLinq
                 }
             }
         }
+
+        public static T YourFirst<T>(this IEnumerable<T> sources, Func<T, bool> predicate)
+        {
+            var enumerator = sources.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                if (predicate(enumerator.Current))
+                {
+                    return enumerator.Current;
+                }
+            }
+            throw new InvalidOperationException("The source sequence is empty.");
+        }
     }
 }
